@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -6,13 +6,17 @@ import PinDeactiveIcon from '@/assets/icons/ic_pin_deactive.svg';
 import PinActiveIcon from '@/assets/icons/ic_pin_active.svg';
 import InfoIcon from '@/assets/icons/ic_info.svg';
 
-const ProductionOrderItem = ({ item, onUpdatePin }) => {
+const ProductionOrderItem = ({ item, onUpdatePin, onInfoPress  }) => {
+    const handleInfoPress = (event) => {
+        onInfoPress(item, event);
+      };
+
     return (
-        <LinearGradient // Thay View bằng LinearGradient
-            colors={['#FFFFFF', 'rgba(199, 223, 251, 0.21)']} // Mảng các màu gradient
-            style={styles.productionOrderItem} // Áp dụng style hiện có
-            start={{ x: 0, y: 0 }} // Điểm bắt đầu gradient (trái)
-            end={{ x: 1, y: 0 }} // Điểm kết thúc gradient (phải)
+        <LinearGradient
+            colors={['#FFFFFF', 'rgba(199, 223, 251, 0.21)']}
+            style={styles.productionOrderItem}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
         >
             <View style={styles.lineLeft} />
             <View style={styles.itemDetails}>
@@ -22,15 +26,15 @@ const ProductionOrderItem = ({ item, onUpdatePin }) => {
                             item.status == 1 ? <Text style={[styles.filterText, { backgroundColor: "rgba(62, 195, 247, 0.2)", color: "#076A94" }]}>Đang sản xuất</Text> :
                                 <Text style={[styles.filterText, { backgroundColor: "rgba(53, 189, 75, 0.2)", color: "#1A7526" }]}>Hoàn thành</Text>
                     }
-                    <TouchableOpacity onPress={() => onUpdatePin(item.id)} 
+                    <TouchableOpacity onPress={() => onUpdatePin(item.id)}
                         style={styles.viewTouchPin}
-                        >
+                    >
                         {item.isPin ? <PinActiveIcon /> : <PinDeactiveIcon />}
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.itemCode}>{item.code}</Text>
                 <Text style={styles.itemDeadline}>Deadline: {item.deadline}</Text>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: 22 }}>
+                <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', height: 22}}>
                     <View style={[styles.progressBarContainer, { backgroundColor: '#FFBC39' }]}>
                         <View style={[styles.progressBar, { width: `${item.progress1}%`, backgroundColor: "#FF9432" }]}>
                             <Text style={styles.progressText}>{item.progress1}%</Text>
@@ -42,8 +46,10 @@ const ProductionOrderItem = ({ item, onUpdatePin }) => {
                             <Text style={styles.progressText}>{item.progress2}%</Text>
                         </View>
                     </View>
-                    <InfoIcon style={{ marginTop: 5 }} />
-                </View>
+                    <TouchableOpacity onPress={handleInfoPress}>
+                        <InfoIcon style={{ marginTop: 5 }} />
+                    </TouchableOpacity>
+                </TouchableOpacity>
             </View>
         </LinearGradient>
     );

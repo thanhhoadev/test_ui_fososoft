@@ -22,6 +22,7 @@ import UnPinIcon from '@/assets/icons/ic_unpin.svg';
 import { ProductionDataContext } from '@/contexts/ProductionDataContext';
 
 import ProductionOrderItem from './ProductionOrderItem';
+import ToolTipProgress from './ToolTipProgress';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -60,8 +61,25 @@ const SideSheetModal = ({ isVisible, onClose }) => {
 
     const [searchText, setSearchText] = useState('');
 
+    const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+    const [tooltipData, setTooltipData] = useState(null);
+    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+
+    const handleInfoIconPress = (item, event) => {
+        const { pageX, pageY } = event.nativeEvent;
+        console.log(Math.floor(pageX), Math.floor(pageY));
+        setTooltipPosition({ x: Math.floor(pageX), y: Math.floor(pageY) });
+        setTooltipData(item);
+        setIsOverlayVisible(true);
+    };
+
+    const closeTooltip = () => {
+        setIsOverlayVisible(false);
+        setTooltipData(null);
+    };
+
     const renderItemPinned = ({ item }) => (
-        <ProductionOrderItem item={item} onUpdatePin={updatePin} />
+        <ProductionOrderItem item={item} onUpdatePin={updatePin} onInfoPress={handleInfoIconPress} />
     );
 
     const sortAndFilterData = () => {
@@ -93,7 +111,7 @@ const SideSheetModal = ({ isVisible, onClose }) => {
             const lowerCaseSearchText = searchText.toLowerCase();
             const searchDataShow = data.filter(item => item.code.toLowerCase().includes(lowerCaseSearchText));
             setDataShow(searchDataShow);
-        }else {
+        } else {
             sortAndFilterData();
         }
     }, [searchText])
@@ -199,6 +217,9 @@ const SideSheetModal = ({ isVisible, onClose }) => {
                     ></TouchableOpacity>
                 </View>
             </Animated.View>
+            {isOverlayVisible && (
+                <ToolTipProgress closeTooltip={closeTooltip} tooltipPosition={tooltipPosition} tooltipData={tooltipData} />
+            )}
         </Modal>
     );
 };
@@ -208,7 +229,7 @@ const styles = StyleSheet.create({
         width: '200%',
         height: '100%',
         alignItems: 'flex-start',
-        backgroundColor: 'rgba(0,0,0,0.3)',
+        backgroundColor: '#F3F4F6',
     },
     sideSheetContent: {
         width: '65%',
